@@ -2,7 +2,7 @@ import sublime, sublime_plugin, os, re
 
 class FluentReplTypeCommand(sublime_plugin.TextCommand):
     def run(self, edit):
-        replView = get_ghci_view(self.view.window().views())
+        replView = _get_ghci_view(self.view.window().views())
         if replView is None:
             return
 
@@ -12,7 +12,7 @@ class FluentReplTypeCommand(sublime_plugin.TextCommand):
             if not re.match(r"^\w+$", word) and not re.match(r"^\(.*\)$", word):
                 word = "(" + word + ")"
 
-            put_ghci_command(replView, "t", word)
+            _put_ghci_command(replView, "t", word)
 
 class FluentReplAutoLoadEventListener(sublime_plugin.EventListener):
     def on_post_save(self, view):
@@ -22,19 +22,19 @@ class FluentReplAutoLoadEventListener(sublime_plugin.EventListener):
         if ext != ".hs" and ext != ".lhs":
             return
 
-        replView = get_ghci_view(view.window().views())
+        replView = _get_ghci_view(view.window().views())
         if replView is None:
             return
 
-        put_ghci_command(replView, "l", "\"" + filename.translate({ord(u"\\"): u"/"}) + "\"")
+        _put_ghci_command(replView, "l", "\"" + filename.translate({ord(u"\\"): u"/"}) + "\"")
 
-def get_ghci_view(views):
+def _get_ghci_view(views):
     for view in views:
         if view.name() == "*REPL* [haskell]":
             return view
     return None
 
-def put_ghci_command(view, command, param):
+def _put_ghci_command(view, command, param):
     edit = view.begin_edit()
     view.insert(edit, view.size(), ":" + command + " " + param)
     view.run_command("repl_enter")
