@@ -26,7 +26,7 @@ class FluentReplAutoLoadEventListener(sublime_plugin.EventListener):
         if replView is None:
             return
 
-        put_ghci_command(replView, "l", filename)
+        put_ghci_command(replView, "l", "\"" + filename.translate({ord(u"\\"): u"/"}) + "\"")
 
 def get_ghci_view(views):
     for view in views:
