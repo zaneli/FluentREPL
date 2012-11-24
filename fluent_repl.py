@@ -19,14 +19,14 @@ class FluentReplAutoLoadEventListener(sublime_plugin.EventListener):
         filename = view.file_name()
         path, ext = os.path.splitext(filename)
 
-        if ext != ".hs":
+        if ext != ".hs" and ext != ".lhs":
             return
 
         replView = get_ghci_view(view.window().views())
         if replView is None:
             return
 
-        put_ghci_command(replView, "l", path)
+        put_ghci_command(replView, "l", filename)
 
 def get_ghci_view(views):
     for view in views:
