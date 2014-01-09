@@ -28,14 +28,16 @@ class FluentReplAutoLoadEventListener(sublime_plugin.EventListener):
         if replView is None:
             return
 
-        _put_repl_command(replView, lang, lang.load_command, "\"" + filename.translate({ord(u"\\"): u"/"}) + "\"")
+        _put_repl_command(replView, lang, lang.load_command, filename.translate({ord(u"\\"): u"/"}))
 
 
 def _get_lang(extension):
-    if extension in [".hs", ".lhs"]:
-        return Haskell()
+    if extension in [".erl"]:
+        return Erlang()
     if extension in [".fs", ".fsx"]:
         return FSharp()
+    if extension in [".hs", ".lhs"]:
+        return Haskell()
     return None
 
 def _get_repl_view(views, lang):
@@ -50,17 +52,29 @@ def _put_repl_command(view, lang, command, param):
     text = lang.createCommandValue(command, param)
     view.run_command("repl_send", {"external_id": external_id, "text": text})
 
+def _wrap_quote(text):
+    if " " in text:
+        return "\"" + text + "\""
+    else:
+        return text
 
-class Haskell:
-    name = "haskell"
-    load_command = "l"
+class Erlang:
+    name = "erlang"
+    load_command = "c"
 
     def createCommandValue(self, command, param):
-        return ":" + command + " " + param
+        return command + "(\"" + param + "\")."
 
 class FSharp:
     name = "fsharp"
     load_command = "load"
 
     def createCommandValue(self, command, param):
-        return "#" + command + " @" + param + ";;"
+        return "#" + command + " @\"" + param + "\";;"
+
+class Haskell:
+    name = "haskell"
+    load_command = "l"
+
+    def createCommandValue(self, command, param):
+        return ":" + command + " " + _wrap_quote(param)
