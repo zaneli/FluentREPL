@@ -38,6 +38,8 @@ def _get_lang(extension):
         return FSharp()
     if extension in [".hs", ".lhs"]:
         return Haskell()
+    if extension in [".scala"]:
+        return Scala()
     return None
 
 def _get_repl_view(views, lang):
@@ -78,3 +80,10 @@ class Haskell:
 
     def createCommandValue(self, command, param):
         return ":" + command + " " + _wrap_quote(param)
+
+class Scala:
+    name = "scala"
+    load_command = "load"
+
+    def createCommandValue(self, command, param):
+        return ":" + command + " " + param
