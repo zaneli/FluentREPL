@@ -46,10 +46,9 @@ def _get_repl_view(views, lang):
     return None
 
 def _put_repl_command(view, lang, command, param):
-    edit = view.begin_edit()
-    view.insert(edit, view.size(), lang.createCommandValue(command, param))
-    view.run_command("repl_enter")
-    view.end_edit(edit)
+    external_id = view.scope_name(0).split(" ")[0].split(".", 1)[1]
+    text = lang.createCommandValue(command, param)
+    view.run_command("repl_send", {"external_id": external_id, "text": text})
 
 
 class Haskell:
