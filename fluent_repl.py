@@ -32,6 +32,8 @@ class FluentReplAutoLoadEventListener(sublime_plugin.EventListener):
 
 
 def _get_lang(extension):
+    if extension in [".clj"]:
+        return Clojure()
     if extension in [".erl"]:
         return Erlang()
     if extension in [".fs", ".fsx"]:
@@ -59,6 +61,13 @@ def _wrap_quote(text):
         return "\"" + text + "\""
     else:
         return text
+
+class Clojure:
+    name = "clojure"
+    load_command = "load-file"
+
+    def createCommandValue(self, command, param):
+        return "(" + command + " \"" + param + "\")"
 
 class Erlang:
     name = "erlang"
